@@ -1,0 +1,38 @@
+class TSPAgent:
+    def __init__(self, distance_matrix):
+        self.distance_matrix = distance_matrix
+        self.num_cities = len(distance_matrix)
+        self.visited = [False] * self.num_cities
+        self.min_cost = float('inf')
+        self.best_path = []
+
+    def solve_tsp(self, current_city, count, cost, path):
+        if count == self.num_cities and self.distance_matrix[current_city][0] > 0:
+            total_cost = cost + self.distance_matrix[current_city][0]
+            if total_cost < self.min_cost:
+                self.min_cost = total_cost
+                self.best_path = path + [0]
+            return
+
+        for next_city in range(self.num_cities):
+            if not self.visited[next_city] and self.distance_matrix[current_city][next_city] > 0:
+                self.visited[next_city] = True
+                self.solve_tsp(next_city, count + 1, cost + self.distance_matrix[current_city][next_city], path + [next_city])
+                self.visited[next_city] = False
+
+    def find_shortest_path(self):
+        self.visited[0] = True
+        self.solve_tsp(0, 1, 0, [0])
+        return self.best_path, self.min_cost
+
+distance_matrix = [
+    [0, 10, 15, 20],
+    [10, 0, 35, 25],
+    [15, 35, 0, 30],
+    [20, 25, 30, 0]
+]
+
+agent = TSPAgent(distance_matrix)
+route, cost = agent.find_shortest_path()
+print("Shortest Route:", route)
+print("Minimum Cost:", cost)
