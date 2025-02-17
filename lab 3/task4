@@ -1,0 +1,76 @@
+from collections import deque
+
+def find_shortest_path(grid):
+    """
+    Finds the shortest path from start (S) to goal (G) in a grid using BFS.
+
+    Args:
+        grid: A 2D list representing the map.
+
+    Returns:
+        A list of tuples representing the path from S to G, or None if no path exists.
+    """
+
+    start = None
+    goal = None
+    rows = len(grid)
+    cols = len(grid[0])
+
+    # Find the start and goal positions
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == 'S':
+                start = (i, j)
+            elif grid[i][j] == 'G':
+                goal = (i, j)
+
+    if not start or not goal:
+        return None  # Start or goal not found
+
+    # Possible moves (up, down, left, right)
+    moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+    # Queue for BFS
+    queue = deque([(start, [start])])  # Store (position, path)
+
+    # Keep track of visited cells
+    visited = set()
+    visited.add(start)
+
+    while queue:
+        (row, col), path = queue.popleft()
+
+        # Goal test
+        if (row, col) == goal:
+            return path
+
+        # Explore neighbors
+        for dr, dc in moves:
+            new_row, new_col = row + dr, col + dc
+
+            # Check boundaries and obstacles
+            if (0 <= new_row < rows and 0 <= new_col < cols and
+                grid[new_row][new_col] != 1 and (new_row, new_col) not in visited):
+
+                new_position = (new_row, new_col)
+                new_path = path + [new_position]
+                queue.append((new_position, new_path))
+                visited.add(new_position)
+
+    return None  # No path found
+
+# Example usage:
+grid = [
+    [0, 0, 0, 1, 0],
+    [0, 1, 'S', 1, 0],
+    [0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 'G']
+]
+
+path = find_shortest_path(grid)
+
+if path:
+    print("Shortest path:", path)
+else:
+    print("No path found.")
